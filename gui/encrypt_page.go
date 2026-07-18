@@ -18,10 +18,10 @@ func newEncryptPage() fyne.CanvasObject {
 	passwordEntry := widget.NewPasswordEntry()
 	passwordEntry.SetPlaceHolder("请输入要加密的密码")
 
-	// 结果展示（多行文本框）
+	// 结果展示（多行文本框，自动换行）
 	resultEntry := widget.NewMultiLineEntry()
 	resultEntry.SetPlaceHolder("加密结果将显示在这里...")
-	resultEntry.Disable() // 只读
+	resultEntry.Wrapping = fyne.TextWrapWord
 	resultEntry.SetMinRowsVisible(6)
 
 	// 复制按钮
