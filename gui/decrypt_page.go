@@ -87,7 +87,6 @@ func newDecryptPage() fyne.CanvasObject {
 	})
 
 	privKeyRow := container.NewBorder(nil, nil, nil, browseBtn, privKeyEntry)
-	resultRow := container.NewBorder(nil, nil, nil, copyBtn, resultEntry)
 
 	// 上半部分：表单 + 密文输入 + 按钮
 	topContent := container.NewVBox(
@@ -100,13 +99,12 @@ func newDecryptPage() fyne.CanvasObject {
 		widget.NewSeparator(),
 	)
 
-	// 结果区域，用 Scroll 包裹撑满剩余空间
-	resultArea := container.NewScroll(container.NewVBox(
-		widget.NewLabel("解密结果:"),
-		resultRow,
-	))
+	// 结果区域：Border 布局，label 在上，copyBtn 在右，Entry 撑满中心
+	resultLabel := widget.NewLabel("解密结果:")
+	resultContainer := container.NewBorder(resultLabel, nil, nil, copyBtn, resultEntry)
+	resultScroll := container.NewScroll(resultContainer)
 
-	form := container.NewBorder(topContent, nil, nil, nil, resultArea)
+	form := container.NewBorder(topContent, nil, nil, nil, resultScroll)
 
 	return container.NewPadded(form)
 }

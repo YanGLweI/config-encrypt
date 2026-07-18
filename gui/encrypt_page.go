@@ -82,9 +82,6 @@ func newEncryptPage() fyne.CanvasObject {
 
 	pubKeyRow := container.NewBorder(nil, nil, nil, browseBtn, pubKeyEntry)
 
-	resultRow := container.NewBorder(nil, nil, nil, copyBtn, resultEntry)
-
-	// 结果区域用 Scroll 包裹，占据剩余空间
 	// 上半部分：表单 + 按钮
 	topContent := container.NewVBox(
 		widget.NewForm(
@@ -95,14 +92,12 @@ func newEncryptPage() fyne.CanvasObject {
 		widget.NewSeparator(),
 	)
 
-	// 结果区域，用 Scroll 包裹以撑满剩余空间
-	resultArea := container.NewScroll(container.NewVBox(
-		widget.NewLabel("加密结果（复制到 config.yml 中）:"),
-		resultRow,
-	))
+	// 结果区域：Border 布局，label 在上，copyBtn 在右，Entry 撑满中心
+	resultLabel := widget.NewLabel("加密结果（复制到 config.yml 中）:")
+	resultContainer := container.NewBorder(resultLabel, nil, nil, copyBtn, resultEntry)
+	resultScroll := container.NewScroll(resultContainer)
 
-	// 使用 HSplit 上下分割，让结果区域占据更多空间
-	form := container.NewBorder(topContent, nil, nil, nil, resultArea)
+	form := container.NewBorder(topContent, nil, nil, nil, resultScroll)
 
 	return container.NewPadded(form)
 }
