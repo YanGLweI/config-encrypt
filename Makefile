@@ -1,10 +1,11 @@
-BINARY_NAME=sftp-config-encrypt
+BINARY_NAME=config-encrypt
 VERSION=1.0.0
 
 # 输出目录
 DIST_DIR=dist
 
-.PHONY: build build-all build-linux build-windows build-darwin build-darwin-arm64 clean
+.PHONY: build build-all build-linux build-windows build-darwin build-darwin-arm64 clean \
+       build-gui build-gui-windows build-gui-darwin build-gui-all
 
 # 编译当前平台
 build:
@@ -35,4 +36,34 @@ build-darwin-arm64:
 
 # 清理
 clean:
-	rm -rf $(DIST_DIR) $(BINARY_NAME)
+	rm -rf $(DIST_DIR) $(BINARY_NAME) $(BINARY_NAME)-gui
+
+# ==================== GUI 编译 ====================
+# 注意: Fyne 依赖 CGO/OpenGL，跨平台编译需使用 fyne-cross (基于 Docker)
+# 安装: go install github.com/fyne-io/fyne-cross@latest
+
+# 编译 GUI（当前平台，需本地有 C 编译器）
+build-gui:
+	go build -ldflags "-s -w" -o $(BINARY_NAME)-gui ./cmd/gui
+
+# GUI Windows amd64（需要 fyne-cross）
+build-gui-windows:
+	@mkdir -p $(DIST_DIR)
+	fyne-cross windows -app-id com.config-encrypt.gui -name $(BINARY_NAME)-gui ./cmd/gui
+	@cp fyne-cross/bin/windows-amd64/$(BINARY_NAME)-gui.exe $(DIST_DIR)/ 2>/dev/null || true
+
+# GUI macOS（需要 fyne-cross）
+build-gui-darwin:
+	@mkdir -p $(DIST_DIR)
+	fyne-cross darwin -app-id com.config-encrypt.gui -name $(BINARY_NAME)-gui ./cmd/gui
+	@cp fyne-cross/bin/darwin-amd64/$(BINARY_NAME)-gui.app $(DIST_DIR)/ 2>/dev/null || true
+	@cp fyne-cross/bin/darwin-arm64/$(BINARY_NAME)-gui.app $(DIST_DIR)/ 2>/dev/null || true
+
+# GUI Linux amd64（需要 fyne-cross）
+build-gui-linux:
+	@mkdir -p $(DIST_DIR)
+	fyne-cross linux -app-id com.config-encrypt.gui -name $(BINARY_NAME)-gui ./cmd/gui
+	@cp fyne-cross/bin/linux-amd64/$(BINARY_NAME)-gui $(DIST_DIR)/ 2>/dev/null || true
+
+# GUI 编译所有平台
+build-gui-all: build-gui-windows build-gui-darwin build-gui-linux

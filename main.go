@@ -8,7 +8,7 @@ import (
 	"strings"
 	"syscall"
 
-	"github.com/YanGLweI/sftp-config-encrypt/crypto"
+	"github.com/YanGLweI/config-encrypt/crypto"
 	"golang.org/x/term"
 )
 
@@ -30,7 +30,7 @@ func main() {
 	case "help", "-h", "--help":
 		printUsage()
 	case "version", "-v", "--version":
-		fmt.Printf("sftp-config-encrypt v%s\n", version)
+		fmt.Printf("config-encrypt v%s\n", version)
 	default:
 		fmt.Fprintf(os.Stderr, "未知命令: %s\n\n", os.Args[1])
 		printUsage()
@@ -39,10 +39,10 @@ func main() {
 }
 
 func printUsage() {
-	fmt.Println(`sftp-config-encrypt - SFTP 管理系统配置加密工具
+	fmt.Println(`config-encrypt - 配置文件加密工具
 
 用法:
-  sftp-config-encrypt <命令> [参数]
+  config-encrypt <命令> [参数]
 
 命令:
   keygen [选项]                   生成 RSA 密钥对
@@ -53,17 +53,17 @@ func printUsage() {
 
 示例:
   # 1. 生成 2048 位密钥对
-  sftp-config-encrypt keygen
-  sftp-config-encrypt keygen -bits 4096 -o mykey
+  config-encrypt keygen
+  config-encrypt keygen -bits 4096 -o mykey
 
   # 2. 加密密码（交互式输入，密码不回显）
-  sftp-config-encrypt encrypt -pub PublicKey.pem
+  config-encrypt encrypt -pub PublicKey.pem
 
   # 3. 加密密码（命令行直接传入）
-  sftp-config-encrypt encrypt -pub PublicKey.pem "my_password"
+  config-encrypt encrypt -pub PublicKey.pem "my_password"
 
   # 4. 解密验证
-  sftp-config-encrypt decrypt -key PrivateKey.pem "ENC[xxxxx]"
+  config-encrypt decrypt -key PrivateKey.pem "ENC[xxxxx]"
 
 输出格式:
   加密后的字符串格式为 ENC[base64密文]，可直接放入 config.yml 中。
