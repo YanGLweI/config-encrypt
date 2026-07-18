@@ -14,16 +14,17 @@ func newDecryptPage() fyne.CanvasObject {
 	privKeyEntry := widget.NewEntry()
 	privKeyEntry.SetPlaceHolder("选择私钥文件 (.pem)...")
 
-	// 密文输入
+	// 密文输入（自动换行，占据主要空间）
 	cipherEntry := widget.NewMultiLineEntry()
 	cipherEntry.SetPlaceHolder("请输入密文，如 ENC[base64...]")
-	cipherEntry.SetMinRowsVisible(3)
+	cipherEntry.Wrapping = fyne.TextWrapWord
+	cipherEntry.SetMinRowsVisible(6)
 
-	// 结果展示（多行文本框，自动换行）
+	// 结果展示（多行文本框，自动换行，较小）
 	resultEntry := widget.NewMultiLineEntry()
 	resultEntry.SetPlaceHolder("解密结果将显示在这里...")
 	resultEntry.Wrapping = fyne.TextWrapWord
-	resultEntry.SetMinRowsVisible(6)
+	resultEntry.SetMinRowsVisible(3)
 
 	// 复制按钮
 	copyBtn := widget.NewButton("复制结果", func() {
@@ -88,23 +89,29 @@ func newDecryptPage() fyne.CanvasObject {
 
 	privKeyRow := container.NewBorder(nil, nil, nil, browseBtn, privKeyEntry)
 
-	// 上半部分：表单 + 密文输入 + 按钮
+	// 顶部：私钥文件
 	topContent := container.NewVBox(
 		widget.NewForm(
 			widget.NewFormItem("私钥文件", privKeyRow),
 		),
-		widget.NewLabel("密文（ENC[...] 格式）:"),
-		cipherEntry,
-		decryptBtn,
-		widget.NewSeparator(),
 	)
 
-	// 结果区域：Border 布局，label 在上，copyBtn 在右，Entry 撑满中心
-	resultLabel := widget.NewLabel("解密结果:")
-	resultContainer := container.NewBorder(resultLabel, nil, nil, copyBtn, resultEntry)
-	resultScroll := container.NewScroll(resultContainer)
+	// 中间：密文输入，自动换行，撑满剩余空间
+	cipherLabel := widget.NewLabel("密文（ENC[...] 格式）:")
+	cipherContainer := container.NewBorder(cipherLabel, nil, nil, nil, cipherEntry)
+	cipherScroll := container.NewScroll(cipherContainer)
 
-	form := container.NewBorder(topContent, nil, nil, nil, resultScroll)
+	// 底部：按钮 + 结果（小框）
+	resultLabel := widget.NewLabel("解密结果:")
+	resultRow := container.NewBorder(nil, nil, nil, copyBtn, resultEntry)
+	bottomContent := container.NewVBox(
+		decryptBtn,
+		widget.NewSeparator(),
+		resultLabel,
+		resultRow,
+	)
+
+	form := container.NewBorder(topContent, bottomContent, nil, nil, cipherScroll)
 
 	return container.NewPadded(form)
 }
