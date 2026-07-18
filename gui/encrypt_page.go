@@ -4,7 +4,6 @@ import (
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/dialog"
-	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/widget"
 
 	"github.com/YanGLweI/config-encrypt/crypto"
@@ -19,10 +18,11 @@ func newEncryptPage() fyne.CanvasObject {
 	passwordEntry := widget.NewPasswordEntry()
 	passwordEntry.SetPlaceHolder("请输入要加密的密码")
 
-	// 结果展示
-	resultEntry := widget.NewEntry()
+	// 结果展示（多行文本框）
+	resultEntry := widget.NewMultiLineEntry()
 	resultEntry.SetPlaceHolder("加密结果将显示在这里...")
 	resultEntry.Disable() // 只读
+	resultEntry.SetMinRowsVisible(6)
 
 	// 复制按钮
 	copyBtn := widget.NewButton("复制结果", func() {
@@ -84,17 +84,25 @@ func newEncryptPage() fyne.CanvasObject {
 
 	resultRow := container.NewBorder(nil, nil, nil, copyBtn, resultEntry)
 
-	form := container.NewVBox(
+	// 结果区域用 Scroll 包裹，占据剩余空间
+	// 上半部分：表单 + 按钮
+	topContent := container.NewVBox(
 		widget.NewForm(
 			widget.NewFormItem("公钥文件", pubKeyRow),
 			widget.NewFormItem("密码", passwordEntry),
 		),
 		encryptBtn,
 		widget.NewSeparator(),
+	)
+
+	// 结果区域，用 Scroll 包裹以撑满剩余空间
+	resultArea := container.NewScroll(container.NewVBox(
 		widget.NewLabel("加密结果（复制到 config.yml 中）:"),
 		resultRow,
-		layout.NewSpacer(),
-	)
+	))
+
+	// 使用 HSplit 上下分割，让结果区域占据更多空间
+	form := container.NewBorder(topContent, nil, nil, nil, resultArea)
 
 	return container.NewPadded(form)
 }

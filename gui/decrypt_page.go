@@ -4,7 +4,6 @@ import (
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/dialog"
-	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/widget"
 
 	"github.com/YanGLweI/config-encrypt/crypto"
@@ -20,10 +19,11 @@ func newDecryptPage() fyne.CanvasObject {
 	cipherEntry.SetPlaceHolder("请输入密文，如 ENC[base64...]")
 	cipherEntry.SetMinRowsVisible(3)
 
-	// 结果展示
-	resultEntry := widget.NewEntry()
+	// 结果展示（多行文本框）
+	resultEntry := widget.NewMultiLineEntry()
 	resultEntry.SetPlaceHolder("解密结果将显示在这里...")
 	resultEntry.Disable() // 只读
+	resultEntry.SetMinRowsVisible(6)
 
 	// 复制按钮
 	copyBtn := widget.NewButton("复制结果", func() {
@@ -89,7 +89,8 @@ func newDecryptPage() fyne.CanvasObject {
 	privKeyRow := container.NewBorder(nil, nil, nil, browseBtn, privKeyEntry)
 	resultRow := container.NewBorder(nil, nil, nil, copyBtn, resultEntry)
 
-	form := container.NewVBox(
+	// 上半部分：表单 + 密文输入 + 按钮
+	topContent := container.NewVBox(
 		widget.NewForm(
 			widget.NewFormItem("私钥文件", privKeyRow),
 		),
@@ -97,10 +98,15 @@ func newDecryptPage() fyne.CanvasObject {
 		cipherEntry,
 		decryptBtn,
 		widget.NewSeparator(),
+	)
+
+	// 结果区域，用 Scroll 包裹撑满剩余空间
+	resultArea := container.NewScroll(container.NewVBox(
 		widget.NewLabel("解密结果:"),
 		resultRow,
-		layout.NewSpacer(),
-	)
+	))
+
+	form := container.NewBorder(topContent, nil, nil, nil, resultArea)
 
 	return container.NewPadded(form)
 }
