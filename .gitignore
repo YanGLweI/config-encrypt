@@ -1,0 +1,16 @@
+# 密钥文件（绝不能提交）
+*.pem
+*.key
+
+# 编译产物
+dist/
+sftp-config-encrypt
+sftp-config-encrypt.exe
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
