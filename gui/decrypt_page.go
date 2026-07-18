@@ -68,20 +68,22 @@ func newDecryptPage() fyne.CanvasObject {
 	})
 	decryptBtn.Importance = widget.HighImportance
 
-	// 选择私钥文件按钮（优先使用 macOS 原生选择器）
+	// 选择私钥文件按钮（优先使用原生选择器）
 	browseBtn := widget.NewButton("浏览...", func() {
-		path := nativeOpenFile("选择私钥文件", "", []string{"pem"})
-		if path != "" {
-			privKeyEntry.SetText(path)
+		path, ok := nativeOpenFile("选择私钥文件", "", []string{"pem"})
+		if !ok {
+			// 原生选择器不可用，回退到 Fyne 对话框
+			dialog.ShowFileOpen(func(uri fyne.URIReadCloser, err error) {
+				if err != nil || uri == nil {
+					return
+				}
+				privKeyEntry.SetText(uri.URI().Path())
+			}, fyne.CurrentApp().Driver().AllWindows()[0])
 			return
 		}
-		// 非 macOS 回退到 Fyne 对话框
-		dialog.ShowFileOpen(func(uri fyne.URIReadCloser, err error) {
-			if err != nil || uri == nil {
-				return
-			}
-			privKeyEntry.SetText(uri.URI().Path())
-		}, fyne.CurrentApp().Driver().AllWindows()[0])
+		if path != "" {
+			privKeyEntry.SetText(path)
+		}
 	})
 
 	privKeyRow := container.NewBorder(nil, nil, nil, browseBtn, privKeyEntry)

@@ -26,6 +26,11 @@ func Run() {
 	w.SetMaster()
 	w.Resize(fyne.NewSize(780, 560))
 
+	// 设置窗口图标
+	if icon := AppIcon(); icon != nil {
+		w.SetIcon(icon)
+	}
+
 	// 定义导航项
 	items := []navItem{
 		{label: "密钥生成", icon: theme.FolderNewIcon(), build: newKeygenPage},

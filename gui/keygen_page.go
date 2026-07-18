@@ -63,20 +63,23 @@ func newKeygenPage() fyne.CanvasObject {
 	})
 	generateBtn.Importance = widget.HighImportance
 
-	// 选择目录按钮（优先使用 macOS 原生选择器）
+	// 选择目录按钮（优先使用原生选择器）
 	browseBtn := widget.NewButton("浏览...", func() {
-		path := nativeOpenFolder("选择保存目录", dirEntry.Text)
-		if path != "" {
-			dirEntry.SetText(path)
+		path, ok := nativeOpenFolder("选择保存目录", dirEntry.Text)
+		if !ok {
+			// 原生选择器不可用，回退到 Fyne 对话框
+			dialog.ShowFolderOpen(func(uri fyne.ListableURI, err error) {
+				if err != nil || uri == nil {
+					return
+				}
+				dirEntry.SetText(uri.Path())
+			}, fyne.CurrentApp().Driver().AllWindows()[0])
 			return
 		}
-		// 非 macOS 回退到 Fyne 对话框
-		dialog.ShowFolderOpen(func(uri fyne.ListableURI, err error) {
-			if err != nil || uri == nil {
-				return
-			}
-			dirEntry.SetText(uri.Path())
-		}, fyne.CurrentApp().Driver().AllWindows()[0])
+		if path != "" {
+			dirEntry.SetText(path)
+		}
+		// path == "" 表示用户取消，不做任何事
 	})
 
 	dirRow := container.NewBorder(nil, nil, nil, browseBtn, dirEntry)

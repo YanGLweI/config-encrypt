@@ -8,8 +8,17 @@ import (
 	"fyne.io/fyne/v2/theme"
 )
 
-//go:embed assets/NotoSansCJKsc-Regular.otf
-var chineseFontData embed.FS
+//go:embed assets/NotoSansCJKsc-Regular.otf assets/icon.png
+var embeddedAssets embed.FS
+
+// AppIcon 返回应用程序图标
+func AppIcon() fyne.Resource {
+	data, err := embeddedAssets.ReadFile("assets/icon.png")
+	if err != nil {
+		return nil
+	}
+	return fyne.NewStaticResource("icon.png", data)
+}
 
 // customTheme 自定义主题，使用 Noto Sans CJK SC 中文字体
 type customTheme struct {
@@ -18,7 +27,7 @@ type customTheme struct {
 
 func newCustomTheme() *customTheme {
 	t := &customTheme{}
-	data, err := chineseFontData.ReadFile("assets/NotoSansCJKsc-Regular.otf")
+	data, err := embeddedAssets.ReadFile("assets/NotoSansCJKsc-Regular.otf")
 	if err == nil {
 		t.chineseFont = fyne.NewStaticResource("NotoSansCJKsc-Regular.otf", data)
 	}

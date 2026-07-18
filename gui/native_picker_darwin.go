@@ -65,7 +65,8 @@ import (
 )
 
 // nativeOpenFile 调用 macOS 原生 NSOpenPanel 选择文件
-func nativeOpenFile(title string, defaultDir string, extensions []string) string {
+// 返回 (路径, 是否使用了原生选择器)。用户取消时返回 ("", true)
+func nativeOpenFile(title string, defaultDir string, extensions []string) (string, bool) {
 	cTitle := C.CString(title)
 	cDir := C.CString(defaultDir)
 	defer C.free(unsafe.Pointer(cTitle))
@@ -82,14 +83,15 @@ func nativeOpenFile(title string, defaultDir string, extensions []string) string
 
 	result := C.openFilePanel(cTitle, cDir, cExtPtr, C.int(len(extensions)))
 	if result == nil {
-		return ""
+		return "", true // 用户取消
 	}
 	defer C.free(unsafe.Pointer(result))
-	return C.GoString(result)
+	return C.GoString(result), true
 }
 
 // nativeOpenFolder 调用 macOS 原生 NSOpenPanel 选择文件夹
-func nativeOpenFolder(title string, defaultDir string) string {
+// 返回 (路径, 是否使用了原生选择器)。用户取消时返回 ("", true)
+func nativeOpenFolder(title string, defaultDir string) (string, bool) {
 	cTitle := C.CString(title)
 	cDir := C.CString(defaultDir)
 	defer C.free(unsafe.Pointer(cTitle))
@@ -97,8 +99,8 @@ func nativeOpenFolder(title string, defaultDir string) string {
 
 	result := C.openFolderPanel(cTitle, cDir)
 	if result == nil {
-		return ""
+		return "", true // 用户取消
 	}
 	defer C.free(unsafe.Pointer(result))
-	return C.GoString(result)
+	return C.GoString(result), true
 }
