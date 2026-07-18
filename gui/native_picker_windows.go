@@ -5,6 +5,7 @@ package gui
 /*
 #cgo LDFLAGS: -lole32 -lcomdlg32 -lshell32 -luuid
 #include <stdlib.h>
+#include <stdio.h>
 #include <windows.h>
 #include <shobjidl.h>
 #include <objbase.h>
