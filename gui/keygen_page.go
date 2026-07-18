@@ -63,8 +63,14 @@ func newKeygenPage() fyne.CanvasObject {
 	})
 	generateBtn.Importance = widget.HighImportance
 
-	// 选择目录按钮
+	// 选择目录按钮（优先使用 macOS 原生选择器）
 	browseBtn := widget.NewButton("浏览...", func() {
+		path := nativeOpenFolder("选择保存目录", dirEntry.Text)
+		if path != "" {
+			dirEntry.SetText(path)
+			return
+		}
+		// 非 macOS 回退到 Fyne 对话框
 		dialog.ShowFolderOpen(func(uri fyne.ListableURI, err error) {
 			if err != nil || uri == nil {
 				return
