@@ -1,6 +1,8 @@
 package gui
 
 import (
+	"net/url"
+
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/container"
@@ -9,7 +11,8 @@ import (
 	"fyne.io/fyne/v2/widget"
 )
 
-const version = "1.0.0"
+const version = "2.0.3"
+const authorURL = "https://yanglwei.github.io/"
 
 // navItem 侧边栏导航项
 type navItem struct {
@@ -72,12 +75,14 @@ func Run() {
 		sidebarItems[i] = btn
 	}
 	sidebar := container.NewVBox(sidebarItems...)
+	// 作者链接
+	authorLink, _ := url.Parse(authorURL)
 	sidebarBox := container.NewVBox(
 		widget.NewLabelWithStyle("配置加密工具", fyne.TextAlignCenter, fyne.TextStyle{Bold: true}),
 		widget.NewSeparator(),
 		sidebar,
 		layout.NewSpacer(),
-		widget.NewLabelWithStyle("v"+version, fyne.TextAlignCenter, fyne.TextStyle{}),
+		widget.NewHyperlink("Developed by Yeunglw", authorLink),
 	)
 	sidebarContainer := container.NewVScroll(sidebarBox)
 	sidebarContainer.Resize(fyne.NewSize(160, 500))
